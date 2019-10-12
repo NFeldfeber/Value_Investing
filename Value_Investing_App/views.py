@@ -17,7 +17,7 @@ def index(request):
 
 
 def stockList(request):
-    stock_list = scraper.stockScraper()
+    stock_list = scraper.stockScraper2()
     # stock_list = Stock.objects.all()
     template = loader.get_template('Value_Investing_App/stock_list.html')
     context = {
