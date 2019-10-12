@@ -5,6 +5,11 @@
     <title>Stock List</title>
 </head>
 <body>
+<form class="" action="" method="POST">
+{% csrf_token %}
+<input type="Submit" name="Scrape" value="scrape"/>
+</form>
+
 {% if stock_list %}
     <ul>
     {% for stock in stock_list %}

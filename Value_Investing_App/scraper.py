@@ -3,26 +3,6 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
-
-
-def stockScraper():
-    web = requests.get(
-        "https://finance.yahoo.com/screener/predefined/most_actives")
-
-    # print(web.status_code)
-    soup = BeautifulSoup(web.content, 'html.parser')
-    trs = soup.find_all("tr")[1:]
-
-    company_names = []
-
-    for tr in trs:
-        for idx, td in enumerate(tr):
-            if idx == 1:
-                company_names.append(td.text)
-
-    return company_names
-
-
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -30,6 +10,31 @@ from bs4 import BeautifulSoup
 
 import re
 import os
+
+
+def stockTickerScraper():
+    web = requests.get(
+        "https://finance.yahoo.com/screener/unsaved/0994c99a-2c50-4557-9490-d3c21885c4b3")
+
+    soup = BeautifulSoup(web.content, 'html.parser')
+    table = soup.find("table")
+    trs = table.select("tr")[1:]
+
+    company_tickers = []
+    company_name = []
+    for tr in trs:
+        for idx, td in enumerate(tr):
+            if idx == 0:
+                company_tickers.append(td.text)
+            if idx == 1:
+                company_name.append(td.text)
+    print("Companies scraped: ", len(company_tickers))
+    companies = zip(company_tickers,company_name)
+    companies = list(companies)
+    print(companies)
+    print(companies[0])
+    print(companies[0][0])
+    return companies
 
 
 def stockScraper2():
@@ -50,12 +55,16 @@ def stockScraper2():
 
     driver = webdriver.Chrome(r"C:\Users\Usuario\Desktop\Miscelaneous\chromedriver.exe")
     driver.get(base_url)
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(100)
 
-    random_num = randint(0, 24)
-    for ticker in company_ticker[:25]:
+    for ticker in company_ticker[0:25]:
         print("Searching for ticker ", ticker)
         ticker_link = driver.find_element_by_link_text(ticker)
-        ticker_link.click()
-        time.sleep(3)
+        try:
+            ticker_link.click()
+        except Exception.StaleElementReferenceException as e:
+            print(e)
+
+        time.sleep(5)
         driver.execute_script("window.history.go(-1)")
+    driver.quit()

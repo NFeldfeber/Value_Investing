@@ -30,3 +30,5 @@
 [1012/164204.668:ERROR:exception_snapshot_win.cc(98)] thread ID 9820 not found in process
 [1012/164242.955:ERROR:process_reader_win.cc(123)] NtOpenThread: {Acceso denegado} Un proceso ha solicitado acceso a un objeto, pero no se le han concedido esos derechos de acceso. (0xc0000022)
 [1012/164242.956:ERROR:exception_snapshot_win.cc(98)] thread ID 1256 not found in process
+[1012/170939.923:ERROR:process_reader_win.cc(123)] NtOpenThread: {Acceso denegado} Un proceso ha solicitado acceso a un objeto, pero no se le han concedido esos derechos de acceso. (0xc0000022)
+[1012/170939.926:ERROR:exception_snapshot_win.cc(98)] thread ID 23856 not found in process
