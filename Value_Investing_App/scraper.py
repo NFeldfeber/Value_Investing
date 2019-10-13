@@ -60,20 +60,24 @@ def stockInfoScraper(ticker):
     income_statement = BeautifulSoup(driver2.page_source, 'html.parser')
 
     #Date of the information
+    text_of_dates = get_text_by_row_title("Breakdown", income_statement)
     dates_of_info = []
-    years_div = income_statement.find('div', attrs={'class': 'D(tbr) C($primaryColor)'})
-    for span in years_div.find_all('span')[2:]:
-        span_separated = span.text.split('/')
-        date = datetime(int(span_separated[2]), int(span_separated[0]), int(span_separated[1]))
-        dates_of_info.append(date)
+    #Formating the texts to datetime
+    for text_date in text_of_dates:
+        if text_date.upper() == "TTM":
+            dates_of_info.append(datetime.now())
+        else:
+            splited_date = text_date.split('/')
+            date = datetime(int(splited_date[2]), int(splited_date[0]), int(splited_date[1]))
+            dates_of_info.append(date)
     print(dates_of_info)
 
     #Total revenues
     total_revenue = []
-    total_revenue_div = income_statement.find('span', text="Total Revenue").parent.parent.parent
-    for span_data in total_revenue_div.find_all('span')[2:]:
-        splited_span = span_data.text.split(',')
-        total_revenue.append(int(splited_span[0] + splited_span[1] + splited_span[2]))
+    text_of_total_revenue = get_text_by_row_title("Total Revenue", income_statement)
+    for text_data in text_of_total_revenue:
+        splitted_revenue = text_data.split(',')
+        total_revenue.append(int(splitted_revenue[0] + splitted_revenue[1] + splitted_revenue[2]))
     print(total_revenue)
     time.sleep(10)
     # driver.execute_script("window.history.go(-1)")
@@ -81,6 +85,13 @@ def stockInfoScraper(ticker):
     # driver.quit()
     driver2.quit()
 
+
+def get_text_by_row_title(row_title,site):
+    data = []
+    row = site.find('span', text=row_title).parent.parent.parent
+    for spans in row.find_all('span')[1:]:
+        data.append(spans.text)
+    return data
 
 def setup_driver(url):
     driver = webdriver.Chrome(r"C:\Users\Usuario\Desktop\Miscelaneous\chromedriver.exe")
