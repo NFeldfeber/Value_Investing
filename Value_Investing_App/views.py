@@ -1,12 +1,15 @@
+import self as self
 from django.shortcuts import render
 from django.http import HttpResponse
 
 # Create your views here.
 from django.template import loader
+from django.views.generic import DetailView
 
 from Value_Investing_App.models import Stock
-from Value_Investing_App.scraper import stockTickerScraper
+from Value_Investing_App.scraper import stockTickerScraper, stockInfoScraper
 from . import scraper
+from django.views import generic
 
 
 def index(request):
@@ -19,10 +22,10 @@ def index(request):
 
 def stockList(request):
     scraping = request.POST.get('Scrape')
-    print(Stock.objects.all().count())
-    Stock.objects.all().delete()
-    print(Stock.objects.all().count())
     if scraping:
+        print(Stock.objects.all().count())
+        Stock.objects.all().delete()
+        print(Stock.objects.all().count())
         companies = stockTickerScraper()
         for company in companies:
             stock = Stock(company_name=company[1], ticker=company[0])
@@ -33,10 +36,21 @@ def stockList(request):
     context = {
         'stock_list': stock_list,
     }
-    print("asd")
     return HttpResponse(template.render(context, request))
 
 
 def scrapeTickers(request):
     stockTickerScraper()
     stockList(request)
+
+
+def stock_detail(request, company_id):
+    template_name = 'Value_Investing_App/detail.html'
+    stock = Stock.objects.filter(id=company_id).first()
+    print(stock)
+    stockInfoScraper(stock.ticker)
+
+    context = {
+        'stock': stock,
+    }
+    return render(request, template_name, context)

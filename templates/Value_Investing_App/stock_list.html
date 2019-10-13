@@ -13,7 +13,7 @@
 {% if stock_list %}
     <ul>
     {% for stock in stock_list %}
-        <li><a href="">{{ stock }}</a></li>
+        <li><a href="/stock/{{ stock.id }}">{{ stock }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
