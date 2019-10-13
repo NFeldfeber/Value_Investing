@@ -40,27 +40,26 @@ def stockTickerScraper():
 
 def stockInfoScraper(ticker):
     base_url = "https://finance.yahoo.com/"
-
-    # driver = setup_driver(base_url)
-
+    driver = setup_driver(base_url)
     # Entering the Yahoo Finance site of the Business
-    # company_site_by_ticker(ticker, driver)
+    company_site_by_ticker(ticker, driver)
 
     # Entering the Financials of the business Page
-    # link = driver.find_elements(By.TAG_NAME,"span")
-    # for elem in link:
-    #     if(elem.text=="Financials"):
-    #         span_to_click = elem
-    # span_to_click.click()
+    link = driver.find_elements(By.TAG_NAME, "span")
+    for elem in link:
+        if elem.text == "Financials":
+            span_to_click = elem
+    span_to_click.click()
 
     # Retrieving the Income Statement data
-
-    driver2 = webdriver.Chrome(r"C:\Users\Usuario\Desktop\Miscelaneous\chromedriver.exe")
-    driver2.get("https://finance.yahoo.com/quote/AAPL/financials?p=AAPL")
-    income_statement = BeautifulSoup(driver2.page_source, 'html.parser')
-
+    #driver2 = webdriver.Chrome(r"C:\Users\Usuario\Desktop\Miscelaneous\chromedriver.exe")
+    #driver2.get("https://finance.yahoo.com/quote/AAPL/financials?p=AAPL")
+    time.sleep(2)
+    income_statement = BeautifulSoup(driver.page_source, 'html.parser')
+    time.sleep(2)
+    print(income_statement.prettify())
     # Date of the information
-    text_of_dates = get_text_by_row_title("Breakdown", income_statement)
+    text_of_dates = get_texts_by_row_title("Breakdown", income_statement)
     dates_of_info = []
     # Formating the texts to datetime
     for text_date in text_of_dates:
@@ -73,29 +72,50 @@ def stockInfoScraper(ticker):
     print(dates_of_info)
 
     # Total Revenues
-    total_revenue = []
-    text_of_total_revenue = get_text_by_row_title("Total Revenue", income_statement)
-    for text_data in text_of_total_revenue:
-        splitted_revenue = text_data.split(',')
-        total_revenue.append(int(splitted_revenue[0] + splitted_revenue[1] + splitted_revenue[2]))
+    texts_of_total_revenue = get_texts_by_row_title("Total Revenue", income_statement)
+    total_revenue = format_list(texts_of_total_revenue, convert_money_to_int)
     print(total_revenue)
 
     # Net Incomes
-    total_incomes = []
-    text_of_total_incomes = get_text_by_row_title("Net Income", income_statement)
-    for text_data in text_of_total_incomes:
-        splitted_income = text_data.split(',')
-        total_incomes.append(int(splitted_income[0] + splitted_income[1] + splitted_income[2]))
+    text_of_net_incomes = get_texts_by_row_title("Net Income", income_statement)
+    total_incomes = format_list(text_of_net_incomes, convert_money_to_int)
     print(total_incomes)
 
     time.sleep(10)
     # driver.execute_script("window.history.go(-1)")
 
-    # driver.quit()
-    driver2.quit()
+    driver.quit()
+    #driver2.quit()
+
+def get_dates_of_tables(site):
+    texts_of_dates = get_texts_by_row_title("Breakdown", site)
+    dates_of_info = []
+    # Formating the texts to datetime
+    for text_date in texts_of_dates:
+        if text_date.upper() == "TTM":
+            dates_of_info.append(datetime.now())
+        else:
+            splited_date = text_date.split('/')
+            date = datetime(int(splited_date[2]), int(splited_date[0]), int(splited_date[1]))
+            dates_of_info.append(date)
+    return dates_of_info
+
+def format_list(original_list, converter):
+    formatted_list = []
+    for element in original_list:
+        formatted_list.append(converter(element))
+    return formatted_list
 
 
-def get_text_by_row_title(row_title, site):
+def convert_money_to_int(money_text):
+    splitted_money = money_text.split(',')
+    money = ""
+    for figure in splitted_money:
+        money += figure
+    return int(money)
+
+
+def get_texts_by_row_title(row_title, site):
     data = []
     row = site.find('span', text=row_title).parent.parent.parent
     for spans in row.find_all('span')[1:]:
