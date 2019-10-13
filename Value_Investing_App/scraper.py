@@ -59,10 +59,10 @@ def stockInfoScraper(ticker):
     driver2.get("https://finance.yahoo.com/quote/AAPL/financials?p=AAPL")
     income_statement = BeautifulSoup(driver2.page_source, 'html.parser')
 
-    #Date of the information
+    # Date of the information
     text_of_dates = get_text_by_row_title("Breakdown", income_statement)
     dates_of_info = []
-    #Formating the texts to datetime
+    # Formating the texts to datetime
     for text_date in text_of_dates:
         if text_date.upper() == "TTM":
             dates_of_info.append(datetime.now())
@@ -72,13 +72,22 @@ def stockInfoScraper(ticker):
             dates_of_info.append(date)
     print(dates_of_info)
 
-    #Total revenues
+    # Total Revenues
     total_revenue = []
     text_of_total_revenue = get_text_by_row_title("Total Revenue", income_statement)
     for text_data in text_of_total_revenue:
         splitted_revenue = text_data.split(',')
         total_revenue.append(int(splitted_revenue[0] + splitted_revenue[1] + splitted_revenue[2]))
     print(total_revenue)
+
+    # Net Incomes
+    total_incomes = []
+    text_of_total_incomes = get_text_by_row_title("Net Income", income_statement)
+    for text_data in text_of_total_incomes:
+        splitted_income = text_data.split(',')
+        total_incomes.append(int(splitted_income[0] + splitted_income[1] + splitted_income[2]))
+    print(total_incomes)
+
     time.sleep(10)
     # driver.execute_script("window.history.go(-1)")
 
@@ -86,12 +95,13 @@ def stockInfoScraper(ticker):
     driver2.quit()
 
 
-def get_text_by_row_title(row_title,site):
+def get_text_by_row_title(row_title, site):
     data = []
     row = site.find('span', text=row_title).parent.parent.parent
     for spans in row.find_all('span')[1:]:
         data.append(spans.text)
     return data
+
 
 def setup_driver(url):
     driver = webdriver.Chrome(r"C:\Users\Usuario\Desktop\Miscelaneous\chromedriver.exe")
