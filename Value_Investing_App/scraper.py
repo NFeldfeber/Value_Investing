@@ -51,7 +51,6 @@ def stockInfoScraper(ticker):
     # Retrieving the Income Statement data
     income_statement = BeautifulSoup(driver.page_source, 'html.parser')
     time.sleep(2)
-    print(income_statement.prettify())
 
     # Date of the income sheet
     dates_of_income_sheet = get_dates_of_tables(income_statement)
@@ -59,8 +58,8 @@ def stockInfoScraper(ticker):
 
     # Total Revenues
     texts_of_total_revenue = get_texts_by_row_title("Total Revenue", income_statement)
-    total_revenue = format_list(texts_of_total_revenue, convert_money_to_int)
-    print(total_revenue)
+    total_revenue_list = format_list(texts_of_total_revenue, convert_money_to_int)
+    print(total_revenue_list)
 
     # Net Incomes
     text_of_net_incomes = get_texts_by_row_title("Net Income", income_statement)
@@ -69,11 +68,30 @@ def stockInfoScraper(ticker):
 
     # Entering the Balance Sheet
     click_span_by_text("Balance Sheet", driver)
+    time.sleep(2)
+    driver.get(driver.current_url)
+    time.sleep(5)
     balance_sheet = BeautifulSoup(driver.page_source, 'html.parser')
+    time.sleep(2)
 
     # Dates of the Balance Sheet info
     dates_of_balance_sheet = get_dates_of_tables(balance_sheet)
     print(dates_of_balance_sheet)
+    time.sleep(5)
+    # Total Assets
+    texts_of_total_assets = get_texts_by_row_title("Total Assets", balance_sheet)
+    total_assets_list = format_list(texts_of_total_assets, convert_money_to_int)
+    print(total_assets_list)
+    time.sleep(2)
+    # Total Liabilities
+    texts_of_total_liabilities = get_texts_by_row_title("Total Liabilities", balance_sheet)
+    total_liabilities_list = format_list(texts_of_total_liabilities, convert_money_to_int)
+    print(total_liabilities_list)
+    time.sleep(2)
+    # Long Term Debt
+    texts_of_long_term_debt = get_texts_by_row_title("Long Term Debt", balance_sheet)
+    total_long_term_debt_list = format_list(texts_of_long_term_debt, convert_money_to_int)
+    print(total_long_term_debt_list)
 
     time.sleep(5)
     # driver.execute_script("window.history.go(-1)")
