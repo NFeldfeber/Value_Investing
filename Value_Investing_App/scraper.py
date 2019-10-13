@@ -44,12 +44,13 @@ def stockInfoScraper(ticker):
     company_site_by_ticker(ticker, driver)
 
     link = driver.find_elements(By.TAG_NAME,"span")
-    print(link)
+
+
     for elem in link:
         if(elem.text=="Financials"):
-            elem.click()
-
-    time.sleep(5)
+            span_to_click = elem
+    span_to_click.click()
+    time.sleep(10)
 
     # driver.execute_script("window.history.go(-1)")
 
