@@ -1,5 +1,6 @@
 from random import randint
 import time
+from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
@@ -40,21 +41,45 @@ def stockTickerScraper():
 def stockInfoScraper(ticker):
     base_url = "https://finance.yahoo.com/"
 
-    driver = setup_driver(base_url)
-    company_site_by_ticker(ticker, driver)
+    # driver = setup_driver(base_url)
 
-    link = driver.find_elements(By.TAG_NAME,"span")
+    # Entering the Yahoo Finance site of the Business
+    # company_site_by_ticker(ticker, driver)
 
+    # Entering the Financials of the business Page
+    # link = driver.find_elements(By.TAG_NAME,"span")
+    # for elem in link:
+    #     if(elem.text=="Financials"):
+    #         span_to_click = elem
+    # span_to_click.click()
 
-    for elem in link:
-        if(elem.text=="Financials"):
-            span_to_click = elem
-    span_to_click.click()
+    # Retrieving the Income Statement data
+
+    driver2 = webdriver.Chrome(r"C:\Users\Usuario\Desktop\Miscelaneous\chromedriver.exe")
+    driver2.get("https://finance.yahoo.com/quote/AAPL/financials?p=AAPL")
+    income_statement = BeautifulSoup(driver2.page_source, 'html.parser')
+
+    #Date of the information
+    dates_of_info = []
+    years_div = income_statement.find('div', attrs={'class': 'D(tbr) C($primaryColor)'})
+    for span in years_div.find_all('span')[2:]:
+        span_separated = span.text.split('/')
+        date = datetime(int(span_separated[2]), int(span_separated[0]), int(span_separated[1]))
+        dates_of_info.append(date)
+    print(dates_of_info)
+
+    #Total revenues
+    total_revenue = []
+    total_revenue_div = income_statement.find('span', text="Total Revenue").parent.parent.parent
+    for span_data in total_revenue_div.find_all('span')[2:]:
+        splited_span = span_data.text.split(',')
+        total_revenue.append(int(splited_span[0] + splited_span[1] + splited_span[2]))
+    print(total_revenue)
     time.sleep(10)
-
     # driver.execute_script("window.history.go(-1)")
 
-    driver.quit()
+    # driver.quit()
+    driver2.quit()
 
 
 def setup_driver(url):

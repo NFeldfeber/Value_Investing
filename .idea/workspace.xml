@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f172d66a-b92f-44d3-9376-66e84f5f3b92" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Value_Investing_App/scraper.py" beforeDir="false" afterPath="$PROJECT_DIR$/Value_Investing_App/scraper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/debug.log" beforeDir="false" afterPath="$PROJECT_DIR$/debug.log" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -81,6 +83,7 @@
       <updated>1570891862432</updated>
       <workItem from="1570891865031" duration="602000" />
       <workItem from="1570893513063" duration="25443000" />
+      <workItem from="1570989609741" duration="3849000" />
     </task>
     <servers />
   </component>
