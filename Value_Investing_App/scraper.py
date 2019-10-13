@@ -45,31 +45,17 @@ def stockInfoScraper(ticker):
     company_site_by_ticker(ticker, driver)
 
     # Entering the Financials of the business Page
-    link = driver.find_elements(By.TAG_NAME, "span")
-    for elem in link:
-        if elem.text == "Financials":
-            span_to_click = elem
-    span_to_click.click()
+    click_span_by_text("Financials", driver)
+    time.sleep(2)
 
     # Retrieving the Income Statement data
-    #driver2 = webdriver.Chrome(r"C:\Users\Usuario\Desktop\Miscelaneous\chromedriver.exe")
-    #driver2.get("https://finance.yahoo.com/quote/AAPL/financials?p=AAPL")
-    time.sleep(2)
     income_statement = BeautifulSoup(driver.page_source, 'html.parser')
     time.sleep(2)
     print(income_statement.prettify())
-    # Date of the information
-    text_of_dates = get_texts_by_row_title("Breakdown", income_statement)
-    dates_of_info = []
-    # Formating the texts to datetime
-    for text_date in text_of_dates:
-        if text_date.upper() == "TTM":
-            dates_of_info.append(datetime.now())
-        else:
-            splited_date = text_date.split('/')
-            date = datetime(int(splited_date[2]), int(splited_date[0]), int(splited_date[1]))
-            dates_of_info.append(date)
-    print(dates_of_info)
+
+    # Date of the income sheet
+    dates_of_income_sheet = get_dates_of_tables(income_statement)
+    print(dates_of_income_sheet)
 
     # Total Revenues
     texts_of_total_revenue = get_texts_by_row_title("Total Revenue", income_statement)
@@ -81,11 +67,28 @@ def stockInfoScraper(ticker):
     total_incomes = format_list(text_of_net_incomes, convert_money_to_int)
     print(total_incomes)
 
-    time.sleep(10)
+    # Entering the Balance Sheet
+    click_span_by_text("Balance Sheet", driver)
+    balance_sheet = BeautifulSoup(driver.page_source, 'html.parser')
+
+    # Dates of the Balance Sheet info
+    dates_of_balance_sheet = get_dates_of_tables(balance_sheet)
+    print(dates_of_balance_sheet)
+
+    time.sleep(5)
     # driver.execute_script("window.history.go(-1)")
 
     driver.quit()
-    #driver2.quit()
+    # driver2.quit()
+
+
+def click_span_by_text(text, driver):
+    spans = driver.find_elements(By.TAG_NAME, "span")
+    for span in spans:
+        if span.text == text:
+            span_to_click = span
+    span_to_click.click()
+
 
 def get_dates_of_tables(site):
     texts_of_dates = get_texts_by_row_title("Breakdown", site)
@@ -99,6 +102,7 @@ def get_dates_of_tables(site):
             date = datetime(int(splited_date[2]), int(splited_date[0]), int(splited_date[1]))
             dates_of_info.append(date)
     return dates_of_info
+
 
 def format_list(original_list, converter):
     formatted_list = []
@@ -134,11 +138,11 @@ def company_site_by_ticker(ticker, driver):
     search_bar = driver.find_element_by_id("yfin-usr-qry")
     button = driver.find_element_by_tag_name("button")
     search_bar.send_keys(ticker)
-    time.sleep(5)
+    time.sleep(2)
     button.click()
     try:
         element = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, "h1"))
         )
     finally:
-        time.sleep(2)
+        pass
