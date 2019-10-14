@@ -92,8 +92,24 @@ def stockInfoScraper(ticker):
     texts_of_long_term_debt = get_texts_by_row_title("Long Term Debt", balance_sheet)
     total_long_term_debt_list = format_list(texts_of_long_term_debt, convert_money_to_int)
     print(total_long_term_debt_list)
+    time.sleep(2)
 
+    # Entering the Statistics page
+    click_span_by_text("Statistics", driver)
+    time.sleep(2)
+    driver.get(driver.current_url)
     time.sleep(5)
+    statistics = BeautifulSoup(driver.page_source, 'html.parser')
+
+    # Forward Annual Dividend Rate
+    texts_of_dividend_rate = get_data_from_statistics_by_text("Forward Annual Dividend Rate", statistics)
+    if texts_of_dividend_rate.upper() != "N/A":
+        dividend_rate = float(texts_of_dividend_rate) / 100
+    else:
+        dividend_rate = 0
+    print(dividend_rate)
+    time.sleep(2)
+
     # driver.execute_script("window.history.go(-1)")
 
     driver.quit()
@@ -122,6 +138,12 @@ def get_dates_of_tables(site):
     return dates_of_info
 
 
+def get_data_from_statistics_by_text(data_text, site):
+    data = []
+    row = site.find('span', text=data_text).parent.parent
+    return row.find_all('td')[1].text
+
+
 def format_list(original_list, converter):
     formatted_list = []
     for element in original_list:
@@ -135,6 +157,12 @@ def convert_money_to_int(money_text):
     for figure in splitted_money:
         money += figure
     return int(money)
+
+
+# todo TEST THIS FUNCTION
+# Replace percentage with float (Ex: 10% = 0.1)
+def convert_percentage_to_float(percentage_text):
+    return float(percentage_text[:-1]) / 100
 
 
 def get_texts_by_row_title(row_title, site):
