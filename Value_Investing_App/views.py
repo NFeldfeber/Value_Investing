@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.views.generic import DetailView
 
-from Value_Investing_App.models import Stock
+from Value_Investing_App.models import Stock, Financial_info
 from Value_Investing_App.scraper import stockTickerScraper, stockInfoScraper
 from . import scraper
 from django.views import generic
@@ -22,7 +22,6 @@ def index(request):
 
 def stockList(request):
     scraping = request.POST.get('Scrape')
-
     if scraping:
         companies = stockTickerScraper()
         for company in companies:
@@ -43,12 +42,23 @@ def scrapeTickers(request):
 
 
 def stock_detail(request, company_id):
-    template_name = 'Value_Investing_App/detail.html'
     stock = Stock.objects.filter(id=company_id).first()
-    print(stock)
-    stockInfoScraper(stock.ticker)
+
+    # Clear button clicked
+    clear = request.POST.get('Clear')
+    if clear:
+        print("Clearing information for stock", stock.company_name)
+        Financial_info.objects.filter(stock=stock).delete()
+
+    # Scraping button clicked
+    scraping = request.POST.get('Scrape')
+    if scraping:
+        print(stock)
+        stockInfoScraper(stock.ticker)
 
     context = {
         'stock': stock,
+        'financial_info': Financial_info.objects.filter(stock=stock)
     }
+    template_name = 'Value_Investing_App/detail.html'
     return render(request, template_name, context)

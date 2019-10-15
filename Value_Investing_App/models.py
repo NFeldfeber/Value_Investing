@@ -31,15 +31,7 @@ class Financial_info(models.Model):
     total_assets = models.FloatField('Total Assets', null=True, blank=True)
     total_liabilities = models.FloatField('Total Liabilities', null=True, blank=True)
     long_term_debt = models.FloatField('Long Term Debt', null=True, blank=True)
-    dividend_rate = models.FloatField('Dividend Rate',default=0)
+    dividend_rate = models.FloatField('Dividend Rate', default=0)
 
     def __str__(self):
         return self.stock.ticker + " Financials"
-
-    def save(self, *args, **kwargs):
-        try:
-            Financial_info.objects.get(stock=self.stock, date=self.date)
-        except ObjectDoesNotExist:
-            super().save(*args, **kwargs)  # Call the "real" save() method.
-        else:
-            print("Financial info for ", self.stock.company_name," is already saved for the day ", self.date)

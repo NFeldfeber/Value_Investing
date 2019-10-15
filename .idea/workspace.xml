@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/Value_Investing_App/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Value_Investing_App/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/debug.log" beforeDir="false" afterPath="$PROJECT_DIR$/debug.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/Value_Investing_App/detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/Value_Investing_App/detail.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -86,7 +87,7 @@
       <updated>1570891862432</updated>
       <workItem from="1570891865031" duration="602000" />
       <workItem from="1570893513063" duration="25443000" />
-      <workItem from="1570989609741" duration="25607000" />
+      <workItem from="1570989609741" duration="30454000" />
     </task>
     <servers />
   </component>

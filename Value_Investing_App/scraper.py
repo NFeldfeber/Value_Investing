@@ -126,15 +126,19 @@ def stockInfoScraper(ticker):
                                                  total_revenue=total_revenue_list[index],
                                                  dividend_rate=dividend_rate
                                                  )
+            financial_info_year.save()
             financial_info.append(financial_info_year)
         for index, date in enumerate(dates_of_balance_sheet):
             for financial_info_elem in financial_info:
                 if financial_info_elem.date == date:
+                    print(date)
+                    print(financial_info_elem.date)
                     print("Updating balance sheet info in already created financial info")
-                    financial_info_year.__setattr__('total_assets', total_assets_list[index])
-                    financial_info_year.__setattr__('total_liabilities', total_liabilities_list[index])
-                    financial_info_year.__setattr__('long_term_debt', total_long_term_debt_list[index])
-                    financial_info_year.save()
+                    financial_info_stored = Financial_info.objects.get(stock=stock, date=date)
+                    financial_info_stored.__setattr__('total_assets', total_assets_list[index])
+                    financial_info_stored.__setattr__('total_liabilities', total_liabilities_list[index])
+                    financial_info_stored.__setattr__('long_term_debt', total_long_term_debt_list[index])
+                    financial_info_stored.save()
     else:
         for index, date in enumerate(dates_of_balance_sheet):
             is_ttm = False
@@ -148,15 +152,15 @@ def stockInfoScraper(ticker):
                                                  long_term_debt=total_long_term_debt_list[index],
                                                  dividend_rate=dividend_rate
                                                  )
+            financial_info_year.save()
             financial_info.append(financial_info_year)
         for index, date in enumerate(dates_of_balance_sheet):
             for financial_info_elem in financial_info:
                 if financial_info_elem.date == date:
-                    financial_info_year.__setattr__('net_income', total_incomes_list[index])
-                    financial_info_year.__setattr__('total_revenue', total_revenue_list[index])
-                    financial_info_year.save()
-
-
+                    financial_info_stored = Financial_info.objects.get(stock=stock, date=date)
+                    financial_info_stored.__setattr__('net_income', total_incomes_list[index])
+                    financial_info_stored.__setattr__('total_revenue', total_revenue_list[index])
+                    financial_info_stored.save()
 
     driver.quit()
     # driver2.quit()

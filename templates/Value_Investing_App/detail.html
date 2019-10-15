@@ -8,11 +8,36 @@
 <form action="/stock">
      <input type="submit" value="Back to Stock List" />
 </form>
+<form class="" action="" method="POST">
+{% csrf_token %}
+<input type="Submit" name="Scrape" value="Scrape Financial Data"/>
+<form class="" action="" method="POST">
+{% csrf_token %}
+<input type="Submit" name="Clear" value="Delete stored info"/>
+</form>
 {% if stock %}
     <p> {{ stock.company_name }} </p>
     <p> {{ stock.ticker }} </p>
+    {% if financial_info %}
+        {% for data in financial_info %}
+            <ul>
+                <li>{{ data.date }}</li>
+                <li>{{ data.is_ttm }}</li>
+                <li>{{ data.total_revenue }}</li>
+                <li>{{ data.net_income }}</li>
+                <li>{{ data.total_assets }}</li>
+                <li>{{ data.total_liabilities }}</li>
+                <li>{{ data.long_term_debt }}</li>
+                <li>{{ data.dividend_rate }}</li>
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>No info is available.</p>
+    {% endif %}
 {% else %}
     <p>No stocks are available.</p>
 {% endif %}
+
+
 </body>
 </html>
