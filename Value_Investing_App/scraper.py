@@ -15,6 +15,8 @@ from bs4 import BeautifulSoup
 import re
 import os
 
+from Value_Investing_App.models import Stock, Financial_info
+
 
 def stockTickerScraper():
     web = requests.get(
@@ -63,8 +65,8 @@ def stockInfoScraper(ticker):
 
     # Net Incomes
     text_of_net_incomes = get_texts_by_row_title("Net Income", income_statement)
-    total_incomes = format_list(text_of_net_incomes, convert_money_to_int)
-    print(total_incomes)
+    total_incomes_list = format_list(text_of_net_incomes, convert_money_to_int)
+    print(total_incomes_list)
 
     # Entering the Balance Sheet
     click_span_by_text("Balance Sheet", driver)
@@ -110,7 +112,51 @@ def stockInfoScraper(ticker):
     print(dividend_rate)
     time.sleep(2)
 
-    # driver.execute_script("window.history.go(-1)")
+    stock = Stock.objects.get(ticker=ticker)
+    financial_info = []
+    if len(dates_of_income_sheet) >= len(dates_of_balance_sheet):
+        for index, date in enumerate(dates_of_income_sheet):
+            is_ttm = False
+            if date == datetime.now().date():
+                is_ttm = True
+            financial_info_year = Financial_info(stock=stock,
+                                                 date=date,
+                                                 is_ttm=is_ttm,
+                                                 net_income=total_incomes_list[index],
+                                                 total_revenue=total_revenue_list[index],
+                                                 dividend_rate=dividend_rate
+                                                 )
+            financial_info.append(financial_info_year)
+        for index, date in enumerate(dates_of_balance_sheet):
+            for financial_info_elem in financial_info:
+                if financial_info_elem.date == date:
+                    print("Updating balance sheet info in already created financial info")
+                    financial_info_year.__setattr__('total_assets', total_assets_list[index])
+                    financial_info_year.__setattr__('total_liabilities', total_liabilities_list[index])
+                    financial_info_year.__setattr__('long_term_debt', total_long_term_debt_list[index])
+                    financial_info_year.save()
+    else:
+        for index, date in enumerate(dates_of_balance_sheet):
+            is_ttm = False
+            if date == datetime.now().date():
+                is_ttm = True
+            financial_info_year = Financial_info(stock=stock,
+                                                 date=date,
+                                                 is_ttm=is_ttm,
+                                                 total_assets=total_assets_list[index],
+                                                 total_liabilities=total_liabilities_list[index],
+                                                 long_term_debt=total_long_term_debt_list[index],
+                                                 dividend_rate=dividend_rate
+                                                 )
+            financial_info.append(financial_info_year)
+        for index, date in enumerate(dates_of_balance_sheet):
+            for financial_info_elem in financial_info:
+                if financial_info_elem.date == date:
+                    financial_info_year.__setattr__('net_income', total_incomes_list[index])
+                    financial_info_year.__setattr__('total_revenue', total_revenue_list[index])
+                    financial_info_year.save()
+
+
 
     driver.quit()
     # driver2.quit()
@@ -130,10 +176,10 @@ def get_dates_of_tables(site):
     # Formating the texts to datetime
     for text_date in texts_of_dates:
         if text_date.upper() == "TTM":
-            dates_of_info.append(datetime.now())
+            dates_of_info.append(datetime.now().date())
         else:
             splited_date = text_date.split('/')
-            date = datetime(int(splited_date[2]), int(splited_date[0]), int(splited_date[1]))
+            date = datetime(int(splited_date[2]), int(splited_date[0]), int(splited_date[1])).date()
             dates_of_info.append(date)
     return dates_of_info
 

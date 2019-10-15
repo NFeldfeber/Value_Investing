@@ -22,10 +22,8 @@ def index(request):
 
 def stockList(request):
     scraping = request.POST.get('Scrape')
+
     if scraping:
-        print(Stock.objects.all().count())
-        Stock.objects.all().delete()
-        print(Stock.objects.all().count())
         companies = stockTickerScraper()
         for company in companies:
             stock = Stock(company_name=company[1], ticker=company[0])
