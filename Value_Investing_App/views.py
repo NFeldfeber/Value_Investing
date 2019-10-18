@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.views.generic import DetailView
 
+from Value_Investing_App.calculator import calculate_intrinsic_value
 from Value_Investing_App.models import Stock, Financial_info
 from Value_Investing_App.scraper import stockTickerScraper, stockInfoScraper
 from . import scraper
@@ -55,6 +56,13 @@ def stock_detail(request, company_id):
     if scraping:
         print(stock)
         stockInfoScraper(stock.ticker)
+
+    # Calculate button clicked
+    calculate = request.POST.get('Calculate')
+    if calculate:
+        print("Calculating intrinsic value for stock", stock.company_name)
+        calculate_intrinsic_value(stock)
+
 
     context = {
         'stock': stock,

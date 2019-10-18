@@ -15,6 +15,10 @@
 {% csrf_token %}
 <input type="Submit" name="Clear" value="Delete stored info"/>
 </form>
+<form class="" action="" method="POST">
+{% csrf_token %}
+<input type="Submit" name="Calculate" value="Calculate Intrinsic Value"/>
+</form>
 {% if stock %}
     <p> {{ stock.company_name }} </p>
     <p> {{ stock.ticker }} </p>
