@@ -32,6 +32,7 @@ class Financial_info(models.Model):
     total_liabilities = models.FloatField('Total Liabilities', null=True, blank=True)
     long_term_debt = models.FloatField('Long Term Debt', null=True, blank=True)
     dividend_rate = models.FloatField('Dividend Rate', default=0)
+    ammount_of_shares = models.IntegerField('Ammount of Shares', default=0)
 
     def __str__(self):
         return self.stock.ticker + " Financials"

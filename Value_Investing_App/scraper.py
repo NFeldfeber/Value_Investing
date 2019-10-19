@@ -40,6 +40,17 @@ def stockTickerScraper():
     return companies
 
 
+def multiplying_factor():
+    return 1000000
+
+
+def format_financial_numbers_list(list):
+    new_list = []
+    for elem in list:
+        new_list.append(elem*multiplying_factor())
+    return new_list
+
+
 def stockInfoScraper(ticker):
     base_url = "https://finance.yahoo.com/"
     driver = setup_driver(base_url)
@@ -61,11 +72,13 @@ def stockInfoScraper(ticker):
     # Total Revenues
     texts_of_total_revenue = get_texts_by_row_title("Total Revenue", income_statement)
     total_revenue_list = format_list(texts_of_total_revenue, convert_money_to_int)
+    total_revenue_list = format_financial_numbers_list(total_revenue_list)
     print(total_revenue_list)
 
     # Net Incomes
     text_of_net_incomes = get_texts_by_row_title("Net Income", income_statement)
     total_incomes_list = format_list(text_of_net_incomes, convert_money_to_int)
+    total_incomes_list = format_financial_numbers_list(total_incomes_list)
     print(total_incomes_list)
 
     # Entering the Balance Sheet
@@ -83,16 +96,19 @@ def stockInfoScraper(ticker):
     # Total Assets
     texts_of_total_assets = get_texts_by_row_title("Total Assets", balance_sheet)
     total_assets_list = format_list(texts_of_total_assets, convert_money_to_int)
+    total_assets_list = format_financial_numbers_list(total_assets_list)
     print(total_assets_list)
     time.sleep(2)
     # Total Liabilities
     texts_of_total_liabilities = get_texts_by_row_title("Total Liabilities", balance_sheet)
     total_liabilities_list = format_list(texts_of_total_liabilities, convert_money_to_int)
+    total_liabilities_list = format_financial_numbers_list(total_liabilities_list)
     print(total_liabilities_list)
     time.sleep(2)
     # Long Term Debt
     texts_of_long_term_debt = get_texts_by_row_title("Long Term Debt", balance_sheet)
     total_long_term_debt_list = format_list(texts_of_long_term_debt, convert_money_to_int)
+    total_long_term_debt_list = format_financial_numbers_list(total_long_term_debt_list)
     print(total_long_term_debt_list)
     time.sleep(2)
 
@@ -110,6 +126,12 @@ def stockInfoScraper(ticker):
     else:
         dividend_rate = 0
     print(dividend_rate)
+
+    # Ammount of Shares
+    texts_of_shares = get_data_from_statistics_by_text("Shares Outstanding", statistics)
+    shares = shares_converter(texts_of_shares)
+    print(shares)
+
     time.sleep(2)
 
     stock = Stock.objects.get(ticker=ticker)
@@ -124,7 +146,8 @@ def stockInfoScraper(ticker):
                                                  is_ttm=is_ttm,
                                                  net_income=total_incomes_list[index],
                                                  total_revenue=total_revenue_list[index],
-                                                 dividend_rate=dividend_rate
+                                                 dividend_rate=dividend_rate,
+                                                 ammount_of_shares=shares
                                                  )
             financial_info_year.save()
             financial_info.append(financial_info_year)
@@ -150,7 +173,8 @@ def stockInfoScraper(ticker):
                                                  total_assets=total_assets_list[index],
                                                  total_liabilities=total_liabilities_list[index],
                                                  long_term_debt=total_long_term_debt_list[index],
-                                                 dividend_rate=dividend_rate
+                                                 dividend_rate=dividend_rate,
+                                                 ammount_of_shares=shares
                                                  )
             financial_info_year.save()
             financial_info.append(financial_info_year)
@@ -213,6 +237,11 @@ def convert_money_to_int(money_text):
 # Replace percentage with float (Ex: 10% = 0.1)
 def convert_percentage_to_float(percentage_text):
     return float(percentage_text[:-1]) / 100
+
+
+def shares_converter(shares_text):
+    if shares_text[-1] == 'B':
+        return float(shares_text[:-1]) * 1000000000000
 
 
 def get_texts_by_row_title(row_title, site):
